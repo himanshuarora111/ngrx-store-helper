@@ -1,0 +1,18 @@
+<div class="sample-container">
+  <h2>Dynamic Store Sample</h2>
+  
+  <div class="sample-display">
+    <p>Test Value: {{ testData$ | async | json }}</p>
+  </div>
+
+  <div class="sample-edit">
+    <input type="text" #newValue placeholder="Enter new value" (keyup.enter)="onUpdate(newValue.value)">
+    <button (click)="onUpdate(newValue.value)">Update Value</button>
+  </div>
+
+  <div class="sample-actions">
+    <button (click)="updateTestData()">Update Test Object</button>
+    <button (click)="resetTestData()">Reset Test Object</button>
+    <button (click)="viewStoreState()">View Store State</button>
+  </div>
+</div>
