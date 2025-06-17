@@ -1,0 +1,17 @@
+<div class="sample-container">
+  <h2>NGRX Store Sample</h2>
+  
+  <div class="sample-display">
+    <p>Test Value: {{ testObject$ | async | json }}</p>
+  </div>
+
+  <div class="sample-edit">
+    <input type="text" #newValue placeholder="Enter new value" (keyup.enter)="onUpdate(newValue.value)">
+    <button (click)="onUpdate(newValue.value)">Update Value</button>
+  </div>
+
+  <div class="sample-actions">
+    <button (click)="updateTestObject()">Update Test Object</button>
+    <button (click)="resetTestObject()">Reset Test Object</button>
+  </div>
+</div>
