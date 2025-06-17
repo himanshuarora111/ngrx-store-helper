@@ -1,0 +1,32 @@
+{
+  "name": "ngrx-store-helper",
+  "version": "0.1.0",
+  "description": "A helper library to simplify NGRX store implementation in Angular applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "keywords": [
+    "ngrx",
+    "angular",
+    "store",
+    "state management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/core": "^16.0.0",
+    "@ngrx/store": "^16.0.0",
+    "@ngrx/effects": "^16.0.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^16.0.0",
+    "@angular/cli": "^16.0.0",
+    "@angular/compiler-cli": "^16.0.0",
+    "typescript": "~5.0.0"
+  }
+}
