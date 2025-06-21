@@ -3,14 +3,22 @@ import { createAction, createReducer, on } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import { StoreConfig, StoreState, storeConfig } from './store.config';
 import { ReducerManager } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 export class DynamicStoreHelper {
   private static instance: DynamicStoreHelper;
   private storeConfig: StoreConfig;
   private reducerManager!: ReducerManager;
+  private staticReducerKeys: Set<string> = new Set();
+  private store!: Store<StoreState>;
 
   private constructor() {
     this.storeConfig = storeConfig;
+  }
+
+  public getStore(): Store<StoreState> {
+    return this.store;
   }
 
   private static initializeStoreConfig(): StoreConfig {
@@ -30,14 +38,27 @@ export class DynamicStoreHelper {
   }
 
   public initializeStore(store: Store<StoreState>, reducerManager: ReducerManager): void {
+    this.store = store;
     this.storeConfig.store = store;
     this.reducerManager = reducerManager;
+    
+    // Get all existing reducers (static reducers)
+    this.store.select((state: StoreState) => state).pipe(take(1)).subscribe(state => {
+      Object.keys(state).forEach(key => {
+        this.staticReducerKeys.add(key);
+      });
+    });
   }
 
   public set(key: string, value: any): void {
     // Check if store is initialized
     if (!this.storeConfig.store) {
       throw new Error('Store must be initialized before setting data');
+    }
+
+    // Check if key is a static reducer key
+    if (this.staticReducerKeys.has(key)) {
+      throw new Error(`Cannot update static reducer key: ${key}. This key is managed by a static reducer.`);
     }
 
     // Create action if it doesn't exist
@@ -72,16 +93,14 @@ export class DynamicStoreHelper {
     this.storeConfig.store.dispatch(action({ payload: value }));
   }
 
-  public get(key: string): any {
+  public get(key: string): Observable<any> {
     // Create selector if it doesn't exist
     if (!this.storeConfig.selectors[key]) {
-      this.storeConfig.selectors[key] = createSelector(
-        (state: StoreState) => state[key],
-        (state) => state
-      );
+      // Create a simple selector that returns the state for this key
+      this.storeConfig.selectors[key] = (state: StoreState) => state[key];
     }
 
-    return this.storeConfig.selectors[key];
+    return this.store.select(this.storeConfig.selectors[key]);
   }
 }
 

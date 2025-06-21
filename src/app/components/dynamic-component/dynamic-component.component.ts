@@ -7,7 +7,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Store } from '@ngrx/store';
 import { upgradedStore } from '../../store/dynamic-store.helper';
 import { Observable } from 'rxjs';
 
@@ -36,11 +35,9 @@ export class DynamicComponentComponent implements OnInit {
   selectedKey = '';
   selectedValue: any;
 
-  constructor(
-    private store: Store,
-  ) {
+  constructor() {
     // Subscribe to the entire store state to track available keys
-    this.store.select(state => state).subscribe(state => {
+    upgradedStore.getStore().select(state => state).subscribe(state => {
       this.availableKeys = Object.keys(state);
     });
 
@@ -56,7 +53,7 @@ export class DynamicComponentComponent implements OnInit {
 
   updateSelectedValue() {
     if (this.selectedKey) {
-      this.selectedValue = this.store.select(upgradedStore.get(this.selectedKey));
+      this.selectedValue = upgradedStore.get(this.selectedKey);
     }
   }
 
