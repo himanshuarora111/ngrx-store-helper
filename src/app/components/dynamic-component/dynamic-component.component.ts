@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { ReducerManager } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -8,59 +9,68 @@ import { upgradedStore } from '../../store/dynamic-store.helper';
 @Component({
   selector: 'app-dynamic-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dynamic-component.component.html',
   styleUrls: ['./dynamic-component.component.scss']
 })
-export class DynamicComponentComponent {
+export class DynamicComponentComponent implements OnInit {
   testData$!: Observable<any>;
+  availableKeys: string[] = [];
+  newKey = '';
+  newValue = '';
+  selectedKey = '';
+  selectedValue: any;
 
   constructor(
     private store: Store,
     private reducerManager: ReducerManager
   ) {
-    console.log('[DynamicComponent] Initializing component');
     // Initialize the store helper with reducer manager
     upgradedStore.initializeStore(this.store, this.reducerManager);
     
+    // Subscribe to the entire store state to track available keys
+    this.store.select(state => state).subscribe(state => {
+      this.availableKeys = Object.keys(state);
+    });
+
+    // Subscribe to selected key value changes
+    this.selectedKey = 'testData';
+    this.updateSelectedValue();
+  }
+
+  ngOnInit() {
     // Initialize testData with an empty object
     upgradedStore.set('testData', {});
-    
-    // Get selector for testData
-    this.testData$ = this.store.select(upgradedStore.get('testData'));
-    
-    // Subscribe to observe changes
-    this.testData$.subscribe(data => {
-      console.log('[DynamicComponent] testData changed:', data);
-    });
-
-    // Subscribe to the entire store state
-    this.store.select(state => state).subscribe(state => {
-      console.log('[DynamicComponent] Full store state:', state);
-    });
   }
 
-  // Method to view the current store state
-  viewStoreState() {
-    this.store.select(state => state).subscribe(state => {
-      console.log('[DynamicComponent] Full store state:', state);
-    });
-  }
-
-  updateTestData() {
-    console.log('[DynamicComponent] Updating test data with default value');
-    upgradedStore.set('testData', { test: 'Updated Value' });
-  }
-
-  onUpdate(newValue: string) {
-    if (newValue) {
-      console.log('[DynamicComponent] Updating test data with:', newValue);
-      upgradedStore.set('testData', { test: newValue });
+  updateSelectedValue() {
+    if (this.selectedKey) {
+      this.selectedValue = this.store.select(upgradedStore.get(this.selectedKey));
     }
   }
 
-  resetTestData() {
-    console.log('[DynamicComponent] Resetting test data');
-    upgradedStore.set('testData', { test: '' });
+  addKey() {
+    if (this.newKey && this.newKey.trim()) {
+      upgradedStore.set(this.newKey.trim(), this.newValue ? { value: this.newValue } : {});
+      this.newKey = '';
+      this.newValue = '';
+    }
+  }
+
+  updateValue() {
+    if (this.selectedKey) {
+      upgradedStore.set(this.selectedKey, this.newValue ? { value: this.newValue } : {});
+      this.newValue = '';
+    }
+  }
+
+  resetValue() {
+    if (this.selectedKey) {
+      upgradedStore.set(this.selectedKey, {});
+    }
+  }
+
+  viewStoreState() {
+    console.log('[DynamicComponent] Current store state:', upgradedStore);
   }
 }

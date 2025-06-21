@@ -35,8 +35,6 @@ export class DynamicStoreHelper {
   }
 
   public set(key: string, value: any): void {
-    console.log('[DynamicStoreHelper] Setting data for key:', key, 'value:', value);
-    
     // Check if store is initialized
     if (!this.storeConfig.store) {
       throw new Error('Store must be initialized before setting data');
@@ -44,13 +42,11 @@ export class DynamicStoreHelper {
 
     // Create action if it doesn't exist
     if (!this.storeConfig.actions[`set${key}`]) {
-      console.log('[DynamicStoreHelper] Creating action for key:', key);
       this.storeConfig.actions[`set${key}`] = createAction(`[${key}] Set`, (payload: any) => ({ payload }));
     }
 
     // Create reducer if it doesn't exist
     if (!this.storeConfig.reducers[key]) {
-      console.log('[DynamicStoreHelper] Creating reducer for key:', key);
       // Create a new reducer that maintains existing state
       const initialState: any = {};
       const reducer = createReducer(
@@ -65,7 +61,6 @@ export class DynamicStoreHelper {
 
     // Create selector if it doesn't exist
     if (!this.storeConfig.selectors[key]) {
-      console.log('[DynamicStoreHelper] Creating selector for key:', key);
       this.storeConfig.selectors[key] = createSelector(
         (state: StoreState) => state[key],
         (state) => state
@@ -74,9 +69,7 @@ export class DynamicStoreHelper {
 
     // Dispatch the action through the store
     const action = this.storeConfig.actions[`set${key}`];
-    console.log('[DynamicStoreHelper] Dispatching action:', action);
     this.storeConfig.store.dispatch(action({ payload: value }));
-    console.log(this.storeConfig.store)
   }
 
   public get(key: string): any {

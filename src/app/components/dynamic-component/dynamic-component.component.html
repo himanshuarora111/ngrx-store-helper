@@ -1,18 +1,52 @@
-<div class="sample-container">
-  <h2>Dynamic Store Sample</h2>
-  
-  <div class="sample-display">
-    <p>Test Value: {{ testData$ | async | json }}</p>
+<div class="dynamic-container">
+  <h2>Dynamic Store Manager</h2>
+
+  <!-- Add New Key Section -->
+  <div class="section">
+    <h3>Add New Key</h3>
+    <div class="input-group">
+      <input type="text" 
+             placeholder="Enter key name" 
+             [(ngModel)]="newKey" 
+             class="key-input">
+      <input type="text" 
+             placeholder="Initial value (optional)" 
+             [(ngModel)]="newValue" 
+             class="value-input">
+      <button (click)="addKey()">Add Key</button>
+    </div>
   </div>
 
-  <div class="sample-edit">
-    <input type="text" #newValue placeholder="Enter new value" (keyup.enter)="onUpdate(newValue.value)">
-    <button (click)="onUpdate(newValue.value)">Update Value</button>
+  <!-- Manage Existing Keys Section -->
+  <div class="section">
+    <h3>Manage Keys</h3>
+    <div class="key-selector">
+      <select [(ngModel)]="selectedKey" (change)="updateSelectedValue()">
+        <option value="">Select a key</option>
+        <option *ngFor="let key of availableKeys" [value]="key">{{ key }}</option>
+      </select>
+    </div>
+
+    <div class="key-actions" *ngIf="selectedKey">
+      <div class="current-value">
+        <h4>Current Value:</h4>
+        <pre>{{ selectedValue | async | json }}</pre>
+      </div>
+
+      <div class="action-buttons">
+        <div class="update-group">
+          <input type="text" 
+                 placeholder="Enter new value" 
+                 [(ngModel)]="newValue">
+          <button (click)="updateValue()">Update Value</button>
+        </div>
+        <button (click)="resetValue()">Reset Value</button>
+      </div>
+    </div>
   </div>
 
-  <div class="sample-actions">
-    <button (click)="updateTestData()">Update Test Object</button>
-    <button (click)="resetTestData()">Reset Test Object</button>
-    <button (click)="viewStoreState()">View Store State</button>
+  <!-- View All State Button -->
+  <div class="section">
+    <button (click)="viewStoreState()">View Full Store State</button>
   </div>
 </div>
