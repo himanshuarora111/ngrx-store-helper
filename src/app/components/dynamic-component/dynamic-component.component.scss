@@ -1,30 +1,84 @@
-.sample-container {
+.dynamic-container {
   padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
 
-  .sample-display,
-  .sample-edit,
-  .sample-actions {
+  .section {
     margin-bottom: 20px;
-  }
-
-  input {
-    padding: 8px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
+    padding: 15px;
+    background: white;
     border-radius: 4px;
-  }
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-  button {
-    padding: 8px 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    h3 {
+      margin: 0 0 15px 0;
+      color: #333;
+    }
 
-    &:hover {
+    .input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 8px 16px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+    }
+
+    .key-selector {
+      margin: 10px 0;
+
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+    }
+
+    .current-value {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+
+      pre {
+        margin: 0;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+
+      .update-group {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+      }
       background: #0056b3;
     }
   }
