@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
+import { ReducerManager } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { upgradedStore } from '../../store/dynamic-store.helper';
 
@@ -14,10 +15,13 @@ import { upgradedStore } from '../../store/dynamic-store.helper';
 export class DynamicComponentComponent {
   testData$!: Observable<any>;
 
-  constructor(private store: Store) {
+  constructor(
+    private store: Store,
+    private reducerManager: ReducerManager
+  ) {
     console.log('[DynamicComponent] Initializing component');
-    // Initialize the store helper
-    upgradedStore.setStore(this.store);
+    // Initialize the store helper with reducer manager
+    upgradedStore.initializeStore(this.store, this.reducerManager);
     
     // Initialize testData with an empty object
     upgradedStore.set('testData', {});

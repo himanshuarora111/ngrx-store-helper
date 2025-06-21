@@ -2,10 +2,12 @@ import { Store } from '@ngrx/store';
 import { createAction, createReducer, on } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
 import { StoreConfig, StoreState, storeConfig } from './store.config';
+import { ReducerManager } from '@ngrx/store';
 
 export class DynamicStoreHelper {
   private static instance: DynamicStoreHelper;
   private storeConfig: StoreConfig;
+  private reducerManager!: ReducerManager;
 
   private constructor() {
     this.storeConfig = storeConfig;
@@ -27,6 +29,11 @@ export class DynamicStoreHelper {
     return DynamicStoreHelper.instance;
   }
 
+  public initializeStore(store: Store<StoreState>, reducerManager: ReducerManager): void {
+    this.storeConfig.store = store;
+    this.reducerManager = reducerManager;
+  }
+
   public set(key: string, value: any): void {
     console.log('[DynamicStoreHelper] Setting data for key:', key, 'value:', value);
     
@@ -46,10 +53,14 @@ export class DynamicStoreHelper {
       console.log('[DynamicStoreHelper] Creating reducer for key:', key);
       // Create a new reducer that maintains existing state
       const initialState: any = {};
-      this.storeConfig.reducers[key] = createReducer(
+      const reducer = createReducer(
         initialState,
         on(this.storeConfig.actions[`set${key}`], (state, { payload }) => ({ ...state, ...payload }))
       );
+      
+      // Register the reducer dynamically
+      this.reducerManager.addReducer(key, reducer);
+      this.storeConfig.reducers[key] = reducer;
     }
 
     // Create selector if it doesn't exist
@@ -65,6 +76,7 @@ export class DynamicStoreHelper {
     const action = this.storeConfig.actions[`set${key}`];
     console.log('[DynamicStoreHelper] Dispatching action:', action);
     this.storeConfig.store.dispatch(action({ payload: value }));
+    console.log(this.storeConfig.store)
   }
 
   public get(key: string): any {
@@ -77,10 +89,6 @@ export class DynamicStoreHelper {
     }
 
     return this.storeConfig.selectors[key];
-  }
-
-  public setStore(store: Store<StoreState>): void {
-    this.storeConfig.store = store;
   }
 }
 
