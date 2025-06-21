@@ -1,28 +1,75 @@
 .sample-container {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: #3f51b5;
+  }
 
   .sample-display {
-    background: #f5f5f5;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    mat-card {
+      background: #f5f5f5;
+      border-radius: 6px;
+
+      mat-card-title {
+        font-weight: 600;
+        color: #333;
+      }
+
+      pre {
+        font-family: monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        margin: 0;
+      }
+    }
+  }
+
+  .sample-edit {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    mat-form-field {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    button {
+      height: 56px;
+      white-space: nowrap;
+    }
   }
 
   .sample-actions {
-    margin-bottom: 20px;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
     button {
-      margin-right: 10px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      &:hover {
-        background-color: #0056b3;
-      }
+      min-width: 180px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .sample-edit,
+  .sample-actions {
+    flex-direction: column;
+
+    mat-form-field,
+    button {
+      width: 100%;
     }
   }
 }

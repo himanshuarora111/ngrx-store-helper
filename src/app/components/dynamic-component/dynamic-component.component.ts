@@ -1,15 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Store } from '@ngrx/store';
-import { ReducerManager } from '@ngrx/store';
-import { Observable } from 'rxjs';
 import { upgradedStore } from '../../store/dynamic-store.helper';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dynamic-component',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatIconModule,
+    MatFormFieldModule
+  ],
   templateUrl: './dynamic-component.component.html',
   styleUrls: ['./dynamic-component.component.scss']
 })
@@ -17,17 +31,14 @@ export class DynamicComponentComponent implements OnInit {
   testData$!: Observable<any>;
   availableKeys: string[] = [];
   newKey = '';
-  newValue = '';
+  initialValue = '';
+  updateValueInput = '';
   selectedKey = '';
   selectedValue: any;
 
   constructor(
     private store: Store,
-    private reducerManager: ReducerManager
   ) {
-    // Initialize the store helper with reducer manager
-    upgradedStore.initializeStore(this.store, this.reducerManager);
-    
     // Subscribe to the entire store state to track available keys
     this.store.select(state => state).subscribe(state => {
       this.availableKeys = Object.keys(state);
@@ -51,16 +62,16 @@ export class DynamicComponentComponent implements OnInit {
 
   addKey() {
     if (this.newKey && this.newKey.trim()) {
-      upgradedStore.set(this.newKey.trim(), this.newValue ? { value: this.newValue } : {});
+      upgradedStore.set(this.newKey.trim(), this.initialValue ? { value: this.initialValue } : {});
       this.newKey = '';
-      this.newValue = '';
+      this.initialValue = '';
     }
   }
 
-  updateValue() {
+  updateKey() {
     if (this.selectedKey) {
-      upgradedStore.set(this.selectedKey, this.newValue ? { value: this.newValue } : {});
-      this.newValue = '';
+      upgradedStore.set(this.selectedKey, this.updateValueInput ? { value: this.updateValueInput } : {});
+      this.updateValueInput = '';
     }
   }
 
@@ -68,9 +79,5 @@ export class DynamicComponentComponent implements OnInit {
     if (this.selectedKey) {
       upgradedStore.set(this.selectedKey, {});
     }
-  }
-
-  viewStoreState() {
-    console.log('[DynamicComponent] Current store state:', upgradedStore);
   }
 }
