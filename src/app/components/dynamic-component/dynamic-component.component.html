@@ -1,52 +1,48 @@
-<div class="dynamic-container">
+<div class="dynamic-container mat-elevation-z4">
   <h2>Dynamic Store Manager</h2>
 
-  <!-- Add New Key Section -->
   <div class="section">
     <h3>Add New Key</h3>
     <div class="input-group">
-      <input type="text" 
-             placeholder="Enter key name" 
-             [(ngModel)]="newKey" 
-             class="key-input">
-      <input type="text" 
-             placeholder="Initial value (optional)" 
-             [(ngModel)]="newValue" 
-             class="value-input">
-      <button (click)="addKey()">Add Key</button>
+      <mat-form-field appearance="outline">
+        <mat-label>Key Name</mat-label>
+        <input matInput [(ngModel)]="newKey" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Initial Value (optional)</mat-label>
+        <input matInput [(ngModel)]="initialValue" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="addKey()">Add Key</button>
     </div>
   </div>
 
-  <!-- Manage Existing Keys Section -->
   <div class="section">
     <h3>Manage Keys</h3>
-    <div class="key-selector">
-      <select [(ngModel)]="selectedKey" (change)="updateSelectedValue()">
-        <option value="">Select a key</option>
-        <option *ngFor="let key of availableKeys" [value]="key">{{ key }}</option>
-      </select>
+
+    <mat-form-field appearance="fill" class="key-selector">
+      <mat-label>Select Key</mat-label>
+      <mat-select [(ngModel)]="selectedKey" (selectionChange)="updateSelectedValue()">
+        <mat-option *ngFor="let key of availableKeys" [value]="key">{{ key }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="current-value">
+      <pre>{{ selectedValue | async | json }}</pre>
     </div>
 
-    <div class="key-actions" *ngIf="selectedKey">
-      <div class="current-value">
-        <h4>Current Value:</h4>
-        <pre>{{ selectedValue | async | json }}</pre>
+    <div class="action-buttons">
+      <div class="update-group">
+        <mat-form-field appearance="outline">
+          <mat-label>New Value</mat-label>
+          <input matInput [(ngModel)]="updateValueInput" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="updateKey()">Update Value</button>
       </div>
 
-      <div class="action-buttons">
-        <div class="update-group">
-          <input type="text" 
-                 placeholder="Enter new value" 
-                 [(ngModel)]="newValue">
-          <button (click)="updateValue()">Update Value</button>
-        </div>
-        <button (click)="resetValue()">Reset Value</button>
-      </div>
+      <button mat-stroked-button color="warn" (click)="resetValue()">Reset Value</button>
     </div>
-  </div>
-
-  <!-- View All State Button -->
-  <div class="section">
-    <button (click)="viewStoreState()">View Full Store State</button>
   </div>
 </div>

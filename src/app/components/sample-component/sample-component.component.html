@@ -1,17 +1,36 @@
-<div class="sample-container">
+<div class="sample-container mat-elevation-z4">
   <h2>NGRX Store Sample</h2>
-  
+
   <div class="sample-display">
-    <p>Test Value: {{ testObject$ | async | json }}</p>
+    <mat-card>
+      <mat-card-title>Test Value</mat-card-title>
+      <mat-card-content>
+        <pre>{{ testObject$ | async | json }}</pre>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <div class="sample-edit">
-    <input type="text" #newValue placeholder="Enter new value" (keyup.enter)="onUpdate(newValue.value)">
-    <button (click)="onUpdate(newValue.value)">Update Value</button>
+    <mat-form-field appearance="outline">
+      <mat-label>Enter new value</mat-label>
+      <input
+        matInput
+        #newValue
+        (keyup.enter)="onUpdate(newValue.value)"
+      />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="onUpdate(newValue.value)">
+      Update Value
+    </button>
   </div>
 
   <div class="sample-actions">
-    <button (click)="updateTestObject()">Update Test Object</button>
-    <button (click)="resetTestObject()">Reset Test Object</button>
+    <button mat-raised-button color="accent" (click)="updateTestObject()">
+      Update Test Object
+    </button>
+    <button mat-stroked-button color="warn" (click)="resetTestObject()">
+      Reset Test Object
+    </button>
   </div>
 </div>
