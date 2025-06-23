@@ -2,7 +2,7 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { routes } from './app.routes';
-import { DynamicStoreHelper } from './store/dynamic-store.helper';
+import { getInitialDynamicReducers } from 'ngrx-store-wrapper';
 import { sampleReducer } from './components/sample-component/sample.reducer';
 
 export const appConfig: ApplicationConfig = {
@@ -10,7 +10,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideStore({
-      ...DynamicStoreHelper.getInstance().getReducers(), 
+      ...getInitialDynamicReducers(), 
       sampleReducer: sampleReducer
     })
   ]
