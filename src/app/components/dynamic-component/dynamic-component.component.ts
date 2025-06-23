@@ -7,8 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { upgradedStore } from '../../store/dynamic-store.helper';
+import { storeWrapper } from 'ngrx-store-wrapper';
 import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-dynamic-component',
@@ -35,9 +36,9 @@ export class DynamicComponentComponent implements OnInit {
   selectedKey = '';
   selectedValue: any;
 
-  constructor() {
+  constructor(store: Store) {
     // Subscribe to the entire store state to track available keys
-    upgradedStore.getStore().select(state => state).subscribe(state => {
+    store.select((state: any) => state).subscribe((state: any) => {
       this.availableKeys = Object.keys(state);
     });
 
@@ -48,18 +49,18 @@ export class DynamicComponentComponent implements OnInit {
 
   ngOnInit() {
     // Initialize testData with an empty object
-    upgradedStore.set('testData', {});
+    storeWrapper.set('testData', {});
   }
 
   updateSelectedValue() {
     if (this.selectedKey) {
-      this.selectedValue = upgradedStore.get(this.selectedKey);
+      this.selectedValue = storeWrapper.get(this.selectedKey);
     }
   }
 
   addKey() {
     if (this.newKey && this.newKey.trim()) {
-      upgradedStore.set(this.newKey.trim(), this.initialValue ? { value: this.initialValue } : {});
+      storeWrapper.set(this.newKey.trim(), this.initialValue ? { value: this.initialValue } : {});
       this.newKey = '';
       this.initialValue = '';
     }
@@ -67,14 +68,14 @@ export class DynamicComponentComponent implements OnInit {
 
   updateKey() {
     if (this.selectedKey) {
-      upgradedStore.set(this.selectedKey, this.updateValueInput ? { value: this.updateValueInput } : {});
+      storeWrapper.set(this.selectedKey, this.updateValueInput ? { value: this.updateValueInput } : {});
       this.updateValueInput = '';
     }
   }
 
   resetValue() {
     if (this.selectedKey) {
-      upgradedStore.set(this.selectedKey, {});
+      storeWrapper.set(this.selectedKey, {});
     }
   }
 }
