@@ -98,14 +98,23 @@ export class DynamicStoreHelper {
     if (!this.store) {
       throw new Error('Store must be initialized before getting data');
     }
-
-    if (!this.dynamicSelectors[key]) {
-      this.dynamicSelectors[key] = createSelector(
-        (state: StoreState) => state[key],
-        (state) => state?.value
-      );
+  
+    if (this.staticReducerKeys.has(key)) {
+      if (!this.dynamicSelectors[key]) {
+        this.dynamicSelectors[key] = createSelector(
+          (state: StoreState) => state[key],
+          (state) => state
+        );
+      }
+    } else {
+      if (!this.dynamicSelectors[key]) {
+        this.dynamicSelectors[key] = createSelector(
+          (state: StoreState) => state[key],
+          (state) => state?.value
+        );
+      }
     }
-
+  
     return this.store.pipe(select(this.dynamicSelectors[key]));
   }
 
