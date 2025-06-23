@@ -22,6 +22,9 @@ export class DynamicStoreHelper {
   public getStore(): Store<StoreState> {
     return this.store;
   }
+  public getReducers(): ActionReducerMap<StoreState> {
+    return this.dynamicReducers;
+  }
   private constructor() {}
 
   public static getInstance(): DynamicStoreHelper {
