@@ -6,13 +6,22 @@
     <div class="input-group">
       <mat-form-field appearance="outline">
         <mat-label>Key Name</mat-label>
-        <input matInput [(ngModel)]="newKey" />
+        <input matInput [(ngModel)]="newKey" name="newKey" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Initial Value (optional)</mat-label>
-        <input matInput [(ngModel)]="initialValue" />
+        <input matInput [(ngModel)]="initialValue" name="initialValue" />
       </mat-form-field>
+
+      <div class="checkboxes">
+        <mat-checkbox [(ngModel)]="saveToSession" name="saveToSession">
+          Save to Session
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="saveToLocal" name="saveToLocal">
+          Save to Local
+        </mat-checkbox>
+      </div>
 
       <button mat-raised-button color="primary" (click)="addKey()">Add Key</button>
     </div>
@@ -23,7 +32,7 @@
 
     <mat-form-field appearance="fill" class="key-selector">
       <mat-label>Select Key</mat-label>
-      <mat-select [(ngModel)]="selectedKey" (selectionChange)="updateSelectedValue()">
+      <mat-select [(ngModel)]="selectedKey" name="selectedKey" (selectionChange)="updateSelectedValue()">
         <mat-option *ngFor="let key of availableKeys" [value]="key">{{ key }}</mat-option>
       </mat-select>
     </mat-form-field>
@@ -36,7 +45,7 @@
       <div class="update-group">
         <mat-form-field appearance="outline">
           <mat-label>New Value</mat-label>
-          <input matInput [(ngModel)]="updateValueInput" />
+          <input matInput [(ngModel)]="updateValueInput" name="updateValueInput" />
         </mat-form-field>
 
         <button mat-raised-button color="primary" (click)="updateKey()">Update Value</button>
