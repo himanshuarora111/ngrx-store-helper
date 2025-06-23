@@ -1,34 +1,31 @@
-import { Store } from '@ngrx/store';
-import { createAction, createReducer, on } from '@ngrx/store';
-import { createSelector } from '@ngrx/store';
-import { StoreConfig, StoreState, storeConfig } from './store.config';
-import { ReducerManager } from '@ngrx/store';
+import { Store, createAction, createReducer, on, ActionReducerMap, ReducerManager, createSelector, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { isDevMode } from '@angular/core';
+
+export interface StoreState {
+  [key: string]: any;
+}
+
+const DYNAMIC_KEY_WARN_THRESHOLD = 100;
 
 export class DynamicStoreHelper {
   private static instance: DynamicStoreHelper;
-  private storeConfig: StoreConfig;
   private reducerManager!: ReducerManager;
   private staticReducerKeys: Set<string> = new Set();
   private store!: Store<StoreState>;
 
-  private constructor() {
-    this.storeConfig = storeConfig;
-  }
+  private dynamicReducers: ActionReducerMap<StoreState> = {};
+  private dynamicActions: Record<string, any> = {};
+  private dynamicSelectors: Record<string, any> = {};
 
   public getStore(): Store<StoreState> {
     return this.store;
   }
-
-  private static initializeStoreConfig(): StoreConfig {
-    return {
-      reducers: {},
-      actions: {},
-      selectors: {},
-      store: null as unknown as Store<StoreState>
-    };
+  public getReducers(): ActionReducerMap<StoreState> {
+    return this.dynamicReducers;
   }
+  private constructor() {}
 
   public static getInstance(): DynamicStoreHelper {
     if (!DynamicStoreHelper.instance) {
@@ -39,68 +36,95 @@ export class DynamicStoreHelper {
 
   public initializeStore(store: Store<StoreState>, reducerManager: ReducerManager): void {
     this.store = store;
-    this.storeConfig.store = store;
     this.reducerManager = reducerManager;
-    
-    // Get all existing reducers (static reducers)
-    this.store.select((state: StoreState) => state).pipe(take(1)).subscribe(state => {
-      Object.keys(state).forEach(key => {
-        this.staticReducerKeys.add(key);
-      });
+
+    const selectWholeState = createSelector(
+      (state: StoreState) => state,
+      (state) => state
+    );
+
+    this.store.pipe(select(selectWholeState), take(1)).subscribe(state => {
+      Object.keys(state).forEach(key => this.staticReducerKeys.add(key));
     });
   }
 
   public set(key: string, value: any): void {
-    // Check if store is initialized
-    if (!this.storeConfig.store) {
+    if (!this.store) {
       throw new Error('Store must be initialized before setting data');
     }
 
-    // Check if key is a static reducer key
     if (this.staticReducerKeys.has(key)) {
-      throw new Error(`Cannot update static reducer key: ${key}. This key is managed by a static reducer.`);
+      if (isDevMode()) {
+        console.warn(
+          `[DynamicStoreHelper] Attempted to set value for static reducer key: "${key}". This operation is ignored.`
+        );
+      }
+      return;
     }
 
-    // Create action if it doesn't exist
-    if (!this.storeConfig.actions[`set${key}`]) {
-      this.storeConfig.actions[`set${key}`] = createAction(`[${key}] Set`, (payload: any) => ({ payload }));
+    if (!this.dynamicActions[`set${key}`]) {
+      this.dynamicActions[`set${key}`] = createAction(`[${key}] Set`, (payload: any) => ({ payload }));
     }
 
-    // Create reducer if it doesn't exist
-    if (!this.storeConfig.reducers[key]) {
-      // Create a new reducer that maintains existing state
-      const initialState: any = {};
+    if (!this.dynamicReducers[key]) {
       const reducer = createReducer(
-        initialState,
-        on(this.storeConfig.actions[`set${key}`], (state, { payload }) => ({ ...state, ...payload }))
+        { value: null },
+        on(this.dynamicActions[`set${key}`], (state, { payload }) => ({ value: payload }))
       );
-      
-      // Register the reducer dynamically
+
       this.reducerManager.addReducer(key, reducer);
-      this.storeConfig.reducers[key] = reducer;
+      this.dynamicReducers[key] = reducer;
+
+      if (isDevMode() && Object.keys(this.dynamicReducers).length > DYNAMIC_KEY_WARN_THRESHOLD) {
+        console.warn(
+          `[DynamicStoreHelper] Warning: More than ${DYNAMIC_KEY_WARN_THRESHOLD} dynamic store keys have been registered.\n` +
+          `Consider pruning unused keys to avoid potential memory or performance issues.`
+        );
+      }
     }
 
-    // Create selector if it doesn't exist
-    if (!this.storeConfig.selectors[key]) {
-      this.storeConfig.selectors[key] = createSelector(
+    if (!this.dynamicSelectors[key]) {
+      this.dynamicSelectors[key] = createSelector(
         (state: StoreState) => state[key],
-        (state) => state
+        (state) => state?.value
       );
     }
 
-    // Dispatch the action through the store
-    const action = this.storeConfig.actions[`set${key}`];
-    this.storeConfig.store.dispatch(action({ payload: value }));
+    const action = this.dynamicActions[`set${key}`];
+    this.store.dispatch(action({ payload: value }));
   }
 
-  public get(key: string): Observable<any> {
-    // Create selector if it doesn't exist
-    if (!this.storeConfig.selectors[key]) {
-      // Create a simple selector that returns the state for this key
-      this.storeConfig.selectors[key] = (state: StoreState) => state[key];
+  public get<T = any>(key: string): Observable<T> {
+    if (!this.store) {
+      throw new Error('Store must be initialized before getting data');
     }
+  
+    if (this.staticReducerKeys.has(key)) {
+      if (!this.dynamicSelectors[key]) {
+        this.dynamicSelectors[key] = createSelector(
+          (state: StoreState) => state[key],
+          (state) => state
+        );
+      }
+    } else {
+      if (!this.dynamicSelectors[key]) {
+        this.dynamicSelectors[key] = createSelector(
+          (state: StoreState) => state[key],
+          (state) => state?.value
+        );
+      }
+    }
+  
+    return this.store.pipe(select(this.dynamicSelectors[key]));
+  }
 
-    return this.store.select(this.storeConfig.selectors[key]);
+  public remove(key: string): void {
+    if (!this.dynamicReducers[key]) return;
+
+    this.reducerManager.removeReducer(key);
+    delete this.dynamicReducers[key];
+    delete this.dynamicActions[`set${key}`];
+    delete this.dynamicSelectors[key];
   }
 }
 
