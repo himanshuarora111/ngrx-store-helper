@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { storeWrapper, StorageType } from 'ngrx-store-wrapper';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { SampleServiceService } from '../../services/sample-service.service';
 
 @Component({
   selector: 'app-dynamic-component',
@@ -40,7 +41,7 @@ export class DynamicComponentComponent implements OnInit {
   selectedKey = '';
   selectedValue: any;
 
-  constructor(store: Store) {
+  constructor(store: Store, private sampleService: SampleServiceService) {
     store.select((state: any) => state).subscribe((state: any) => {
       this.availableKeys = Object.keys(state);
     });
@@ -55,6 +56,58 @@ export class DynamicComponentComponent implements OnInit {
 
   ngOnInit() {
     storeWrapper.set('testData', {});
+    let sample_data = {
+      name: "Apple AirPods",
+      data: {
+        color: "white",
+        generation: "3rd",
+        price: 135
+      }
+    };
+    // storeWrapper.set('price_data', { value: 140 });
+
+    storeWrapper.addEffect({
+      key: 'employeeAPI',
+      serviceFn: this.sampleService.getData,
+      context: this.sampleService,
+      intervalMs: 10000,
+      immediate: true
+    });
+    storeWrapper.addEffect({
+      key: 'updateDataAPI',
+      serviceFn: this.sampleService.updateData,
+      args: sample_data,
+      immediate: false
+    });
+    storeWrapper.get('price_data').subscribe((val) => {
+      if(!val?.value) return
+      sample_data = {
+        name: "Apple AirPods",
+        data: {
+          color: "white",
+          generation: "3rd",
+          price: val.value
+        }
+      };
+      storeWrapper.recallEffect('updateDataAPI', sample_data);
+    });
+    
+    storeWrapper.get('employeeAPI').subscribe((val) => {
+      console.log('[DynamicComponent] Employee API:', val);
+    });
+    storeWrapper.get('updateDataAPI').subscribe((val) => {
+      console.log('[DynamicComponent] Update Data API:', val);
+    });
+    storeWrapper.addHttpEffect({
+      key: 'employeeAPIHTTP',
+      url: "https://api.restful-api.dev/objects/ff8081819782e69e0197a31541675900",
+      method: 'GET',
+      intervalMs: 10000,
+      immediate: true
+    })
+    storeWrapper.get('employeeAPIHTTP').subscribe((val) => {
+      console.log('[DynamicComponent] Employee API HTTP:', val);
+    });
   }
 
   updateSelectedValue() {
