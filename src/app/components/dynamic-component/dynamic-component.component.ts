@@ -40,6 +40,7 @@ export class DynamicComponentComponent implements OnInit {
   updateValueInput = '';
   selectedKey = '';
   selectedValue: any;
+  storeWrapper = storeWrapper;
 
   constructor(store: Store, private sampleService: SampleServiceService) {
     store.select((state: any) => state).subscribe((state: any) => {
@@ -56,21 +57,14 @@ export class DynamicComponentComponent implements OnInit {
 
   ngOnInit() {
     storeWrapper.set('testData', {});
-    let sample_data = {
-      name: "Apple AirPods",
-      data: {
-        color: "white",
-        generation: "3rd",
-        price: 135
-      }
-    };
+    let sample_data = {};
     // storeWrapper.set('price_data', { value: 140 });
 
     storeWrapper.addEffect({
       key: 'employeeAPI',
       serviceFn: this.sampleService.getData,
       context: this.sampleService,
-      intervalMs: 10000,
+      intervalMs: 20000,
       immediate: true
     });
     storeWrapper.addEffect({
@@ -92,22 +86,25 @@ export class DynamicComponentComponent implements OnInit {
       storeWrapper.recallEffect('updateDataAPI', sample_data);
     });
     
-    storeWrapper.get('employeeAPI').subscribe((val) => {
-      console.log('[DynamicComponent] Employee API:', val);
-    });
-    storeWrapper.get('updateDataAPI').subscribe((val) => {
-      console.log('[DynamicComponent] Update Data API:', val);
-    });
-    storeWrapper.addHttpEffect({
-      key: 'employeeAPIHTTP',
-      url: "https://api.restful-api.dev/objects/ff8081819782e69e0197a31541675900",
-      method: 'GET',
-      intervalMs: 10000,
-      immediate: true
-    })
-    storeWrapper.get('employeeAPIHTTP').subscribe((val) => {
-      console.log('[DynamicComponent] Employee API HTTP:', val);
-    });
+    // storeWrapper.get('employeeAPI').subscribe((val) => {
+    //   console.log('[DynamicComponent] Employee API:', val);
+    // });
+    // storeWrapper.get('updateDataAPI').subscribe((val) => {
+    //   console.log('[DynamicComponent] Update Data API:', val);
+    // });
+
+
+    // Sample using HTTP effect.
+    // storeWrapper.addHttpEffect({
+    //   key: 'employeeAPIHTTP',
+    //   url: "https://api.restful-api.dev/objects/ff8081819782e69e0197a31541675900",
+    //   method: 'GET',
+    //   intervalMs: 10000,
+    //   immediate: true
+    // })
+    // storeWrapper.get('employeeAPIHTTP').subscribe((val) => {
+    //   console.log('[DynamicComponent] Employee API HTTP:', val);
+    // });
   }
 
   updateSelectedValue() {
