@@ -1,5 +1,42 @@
-.container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
+.my-divider {
+  margin: 24px 0;
+}
+
+.toggle-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.toggle-section .left {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-section .right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  max-width: 500px;
+}
+
+.toggle-section mat-icon {
+  vertical-align: middle;
+}
+
+.add_margin {
+  margin-left: 68px;
+  margin-right: 68px;
+  margin-top: 32px;
+  margin-bottom: 32px;
+  padding: 32px;
+}

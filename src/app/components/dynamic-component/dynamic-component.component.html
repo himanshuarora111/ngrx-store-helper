@@ -54,4 +54,21 @@
       <button mat-stroked-button color="warn" (click)="resetValue()">Reset Value</button>
     </div>
   </div>
+  <div class="section">
+    <h3>Live API Responses</h3>
+  
+    <mat-card class="api-card">
+      <mat-card-title>Employee API (auto-updates every 20 seconds)</mat-card-title>
+      <mat-card-content>
+        <pre>{{ (storeWrapper.get('employeeAPI') | async) | json }}</pre>
+      </mat-card-content>
+    </mat-card>
+  
+    <mat-card class="api-card">
+      <mat-card-title>Update Data API (triggered via Adding/Updating key <code>price_data</code> in Store)</mat-card-title>
+      <mat-card-content>
+        <pre>{{ (storeWrapper.get('updateDataAPI') | async) | json }}</pre>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>

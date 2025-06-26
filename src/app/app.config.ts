@@ -4,6 +4,7 @@ import { provideStore } from '@ngrx/store';
 import { routes } from './app.routes';
 import { getInitialDynamicReducers } from 'ngrx-store-wrapper';
 import { sampleReducer } from './components/sample-component/sample.reducer';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       ...getInitialDynamicReducers(), 
       sampleReducer: sampleReducer
-    })
+    }),
+    provideHttpClient()
   ]
 };

@@ -1,7 +1,26 @@
 <div class="container">
   <app-sample-component></app-sample-component>
-  <hr style="margin: 20px 0;">
-  <button (click)="toggleDynamicComponent()">Toggle Dynamic Component</button>
+
+  <mat-divider class="my-divider"></mat-divider>
+
+  <div class="toggle-section add_margin">
+    <div class="left">
+      <button mat-raised-button color="primary" (click)="toggleDynamicComponent()">
+        Toggle Dynamic Component
+      </button>
+    </div>
+    <div class="right">
+      <mat-icon color="accent">info</mat-icon>
+      <span>
+        Open DevTools → Console tab to observe <strong>counter</strong> logs.<br />
+        It auto-unsubscribes when the component is destroyed.
+      </span>
+    </div>
+  </div>
+  
+  <mat-divider class="my-divider"></mat-divider>
+
   <app-dynamic-component *ngIf="showDynamicComponent"></app-dynamic-component>
 </div>
+
 <router-outlet />

@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { SampleComponentComponent } from './components/sample-component/sample-component.component';
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 import { storeWrapper } from 'ngrx-store-wrapper';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, SampleComponentComponent, DynamicComponentComponent],
+  imports: [RouterOutlet, CommonModule, SampleComponentComponent, DynamicComponentComponent, MatIconModule, MatDividerModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
